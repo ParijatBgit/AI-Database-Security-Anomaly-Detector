@@ -9,7 +9,7 @@ output_path = project_root / "data" / "processed" / "database_activity_processed
 df = pd.read_csv(input_path)
 print("Original dataset shape:", df.shape)
 duplicate_count = df.duplicated().sum()
-df = df.drop_duplicates()
+df = df.drop_duplicates().reset_index(drop=True)
 print("Duplicates removed:", duplicate_count)
 missing_count = df.isnull().sum().sum()
 if missing_count > 0:
