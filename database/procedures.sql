@@ -1,0 +1,159 @@
+
+CREATE OR REPLACE PROCEDURE REGISTER_USER (
+    P_USERNAME   IN VARCHAR2,
+    P_USER_ROLE  IN VARCHAR2,
+    P_DEPARTMENT IN VARCHAR2
+)
+AS
+BEGIN
+    INSERT INTO DB_USERS (
+        USERNAME,
+        USER_ROLE,
+        DEPARTMENT
+    )
+    VALUES (
+        P_USERNAME,
+        P_USER_ROLE,
+        P_DEPARTMENT
+    );
+    DBMS_OUTPUT.PUT_LINE('User registered successfully.');
+
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+        RAISE_APPLICATION_ERROR(
+            -20001,
+            'Username already exists.'
+        );
+END;
+/
+
+BEGIN
+    REGISTER_USER(
+        'Karan',
+        'STUDENT',
+        'CSE'
+    );
+END;
+/
+COMMIT;
+
+
+CREATE OR REPLACE PROCEDURE RECORD_LOGIN (
+    P_USERNAME   IN VARCHAR2,
+    P_IP_ADDRESS IN VARCHAR2
+)
+AS
+    V_USER_ID NUMBER;
+BEGIN
+    SELECT USER_ID
+    INTO V_USER_ID
+    FROM DB_USERS
+    WHERE USERNAME = P_USERNAME
+    AND ACCOUNT_STATUS = 'ACTIVE';
+    INSERT INTO LOGIN_HISTORY (
+        USER_ID,
+        IP_ADDRESS
+    )
+    VALUES (
+        V_USER_ID,
+        P_IP_ADDRESS
+    );
+
+    DBMS_OUTPUT.PUT_LINE('Login recorded successfully.');
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(
+            -20002,
+            'User does not exist or is inactive.'
+        );
+END;
+/
+
+COMMIT;
+
+
+
+CREATE OR REPLACE PROCEDURE RECORD_FAILED_LOGIN (
+    P_USERNAME IN VARCHAR2,
+    P_REASON   IN VARCHAR2
+)
+AS
+    V_USER_ID NUMBER;
+BEGIN
+    BEGIN
+        SELECT USER_ID
+        INTO V_USER_ID
+        FROM DB_USERS
+        WHERE USERNAME = P_USERNAME;
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_USER_ID := NULL;
+    END;
+    INSERT INTO LOGIN_FAILURES (
+        USER_ID,
+        ATTEMPTED_USERNAME,
+        FAILURE_REASON
+    )
+    VALUES (
+        V_USER_ID,
+        P_USERNAME,
+        P_REASON
+    );
+    DBMS_OUTPUT.PUT_LINE(
+        'Failed login attempt recorded.'
+    );
+END;
+/
+
+COMMIT;
+
+
+
+CREATE OR REPLACE PROCEDURE RECORD_QUERY (
+    P_USERNAME      IN VARCHAR2,
+    P_QUERY_TYPE    IN VARCHAR2,
+    P_OBJECT_NAME   IN VARCHAR2,
+    P_QUERY_TEXT    IN VARCHAR2,
+    P_ROWS_AFFECTED IN NUMBER,
+    P_ACCESS_STATUS IN VARCHAR2
+)
+AS
+    V_USER_ID NUMBER;
+BEGIN
+    SELECT USER_ID
+    INTO V_USER_ID
+    FROM DB_USERS
+    WHERE USERNAME = P_USERNAME
+    AND ACCOUNT_STATUS = 'ACTIVE';
+    INSERT INTO QUERY_LOGS (
+        USER_ID,
+        QUERY_TYPE,
+        OBJECT_NAME,
+        QUERY_TEXT,
+        ROWS_AFFECTED,
+        ACCESS_STATUS
+    )
+    VALUES (
+        V_USER_ID,
+        UPPER(P_QUERY_TYPE),
+        P_OBJECT_NAME,
+        P_QUERY_TEXT,
+        P_ROWS_AFFECTED,
+        UPPER(P_ACCESS_STATUS)
+    );
+    DBMS_OUTPUT.PUT_LINE(
+        'Query activity recorded successfully.'
+    );
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(
+            -20003,
+            'User does not exist or is inactive.'
+        );
+END;
+/
+
+COMMIT;
