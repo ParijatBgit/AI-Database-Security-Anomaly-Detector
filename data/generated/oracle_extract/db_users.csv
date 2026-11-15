@@ -1,0 +1,7 @@
+user_id,username,user_role,department,account_status
+1,Rahul,STUDENT,CSE,ACTIVE
+2,Amit,FACULTY,IT,ACTIVE
+3,Priya,STUDENT,ECE,ACTIVE
+4,Sneha,RESEARCHER,CSE,ACTIVE
+5,Admin,ADMIN,ADMINISTRATION,ACTIVE
+6,Rohan,STUDENT,CSE,ACTIVE
