@@ -56,6 +56,57 @@ VALUES (
 );
 
 
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Rahul'),
+    'STUDENTS', 'SELECT'
+);
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Rahul'),
+    'MARKS', 'SELECT'
+);
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Amit'),
+    'STUDENTS', 'SELECT'
+);
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Amit'),
+    'STUDENTS', 'UPDATE'
+);
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Priya'),
+    'STUDENTS', 'SELECT'
+);
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Sneha'),
+    'RESEARCH', 'SELECT'
+);
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Admin'),
+    'STUDENTS', 'ALL'
+);
+INSERT INTO USER_PERMISSIONS
+(user_id, object_name, permission_type)
+VALUES (
+    (SELECT user_id FROM DB_USERS WHERE username='Rohan'),
+    'STUDENTS', 'SELECT'
+);
+
+
+
 INSERT INTO LOGIN_FAILURES
 (user_id, attempted_username, failure_reason)
 VALUES (
@@ -144,55 +195,3 @@ VALUES (
     'SELECT', 'STUDENTS', 'SELECT ID FROM STUDENTS',
     10, 'SUCCESS'
 );
-
-
-
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Rahul'),
-    'STUDENTS', 'SELECT'
-);
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Rahul'),
-    'MARKS', 'SELECT'
-);
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Amit'),
-    'STUDENTS', 'SELECT'
-);
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Amit'),
-    'STUDENTS', 'UPDATE'
-);
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Priya'),
-    'STUDENTS', 'SELECT'
-);
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Sneha'),
-    'RESEARCH', 'SELECT'
-);
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Admin'),
-    'STUDENTS', 'ALL'
-);
-INSERT INTO USER_PERMISSIONS
-(user_id, object_name, permission_type)
-VALUES (
-    (SELECT user_id FROM DB_USERS WHERE username='Rohan'),
-    'STUDENTS', 'SELECT'
-);
-COMMIT;
