@@ -53,7 +53,3 @@ CREATE TABLE ANOMALY_ALERTS (
     alert_status VARCHAR2(20) DEFAULT 'OPEN',
     FOREIGN KEY (user_id) REFERENCES DB_USERS(user_id)
 );
-
-SELECT table_name
-FROM user_tables
-ORDER BY table_name;
