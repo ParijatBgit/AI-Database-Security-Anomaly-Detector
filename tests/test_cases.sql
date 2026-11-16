@@ -1,0 +1,99 @@
+-- TEST CASE 1: Register fresh users
+BEGIN
+    REGISTER_USER('TestNormal01', 'STUDENT', 'CSE');
+    REGISTER_USER('TestFailed01', 'STUDENT', 'CSE');
+    REGISTER_USER('TestVolume01', 'STUDENT', 'CSE');
+    REGISTER_USER('TestDelete01', 'STUDENT', 'CSE');
+    COMMIT;
+END;
+/
+
+-- Verifying registered users
+SELECT USER_ID, USERNAME, USER_ROLE, DEPARTMENT, ACCOUNT_STATUS
+FROM DB_USERS
+WHERE USERNAME IN ('TestNormal01', 'TestFailed01', 'TestVolume01', 'TestDelete01')
+ORDER BY USER_ID;
+
+
+-- TEST CASE 2: Normal login and normal queries
+BEGIN
+    RECORD_LOGIN('TestNormal01', '192.168.1.101');
+    RECORD_QUERY('TestNormal01', 'SELECT', 'STUDENTS', 'SELECT * FROM STUDENTS', 5, 'SUCCESS');
+    RECORD_QUERY('TestNormal01', 'SELECT', 'COURSES', 'SELECT * FROM COURSES', 8, 'SUCCESS');
+    RECORD_QUERY('TestNormal01', 'SELECT', 'FACULTY', 'SELECT * FROM FACULTY', 6, 'SUCCESS');
+
+    COMMIT;
+END;
+/
+
+-- Verifying normal activity
+SELECT *
+FROM LOGIN_HISTORY
+WHERE USER_ID = (SELECT USER_ID FROM DB_USERS WHERE USERNAME = 'TestNormal01');
+SELECT *
+FROM QUERY_LOGS
+WHERE USER_ID = (SELECT USER_ID FROM DB_USERS WHERE USERNAME = 'TestNormal01')
+ORDER BY QUERY_ID;
+
+
+-- TEST CASE 3: Repeated failed login attempts
+BEGIN
+    FOR i IN 1..15 LOOP
+        RECORD_FAILED_LOGIN('TestFailed01', 'INCORRECT_PASSWORD');
+    END LOOP;
+    COMMIT;
+END;
+/
+
+-- Verifying failed login attempts
+SELECT ATTEMPTED_USERNAME, FAILURE_REASON, COUNT(*) AS FAILED_ATTEMPTS
+FROM LOGIN_FAILURES
+WHERE ATTEMPTED_USERNAME = 'TestFailed01'
+GROUP BY ATTEMPTED_USERNAME, FAILURE_REASON;
+
+
+-- TEST CASE 4: Unusually high query volume
+BEGIN
+    FOR i IN 1..85 LOOP
+        RECORD_QUERY('TestVolume01', 'SELECT', 'STUDENTS', 'SELECT * FROM STUDENTS', 5, 'SUCCESS');
+    END LOOP;
+    COMMIT;
+END;
+/
+
+-- Verifying query volume
+SELECT USER_ID, QUERY_TYPE, COUNT(*) AS TOTAL_QUERIES
+FROM QUERY_LOGS
+WHERE USER_ID = (SELECT USER_ID FROM DB_USERS WHERE USERNAME = 'TestVolume01')
+GROUP BY USER_ID, QUERY_TYPE;
+
+
+-- TEST CASE 5: Suspicious DELETE attempts
+BEGIN
+    FOR i IN 1..15 LOOP
+        RECORD_QUERY('TestDelete01', 'DELETE', 'STUDENTS', 'DELETE FROM STUDENTS', 0, 'DENIED');
+    END LOOP;
+    COMMIT;
+END;
+/
+
+-- Verifying denied DELETE attempts
+SELECT USER_ID, QUERY_TYPE, ACCESS_STATUS, COUNT(*) AS TOTAL_ATTEMPTS
+FROM QUERY_LOGS
+WHERE USER_ID = (
+    SELECT USER_ID
+    FROM DB_USERS
+    WHERE USERNAME = 'TestDelete01'
+)
+GROUP BY USER_ID, QUERY_TYPE, ACCESS_STATUS;
+
+-- execution of : python backend/prepare_oracle_data.py (can be executed after individual cases or all the cases together)
+
+
+-- TEST CASE 7: Verifying generated anomaly alerts
+SELECT A.ALERT_ID, U.USERNAME, A.ACTIVITY_TYPE, A.DESCRIPTION,
+       A.RISK_LEVEL, A.ALERT_STATUS
+FROM ANOMALY_ALERTS A
+JOIN DB_USERS U ON A.USER_ID = U.USER_ID
+WHERE U.USERNAME IN ('TestNormal01', 'TestFailed01', 'TestVolume01', 'TestDelete01')
+ORDER BY A.ALERT_ID DESC;

@@ -31,14 +31,19 @@ def store_anomaly_alerts(connection):
     update_query = "UPDATE ANOMALY_ALERTS SET RISK_LEVEL = :1 WHERE ALERT_ID = :2"
 
     try:
+        required_columns = {
+            "user_id", "predicted_label", "anomaly_score",
+            "queries_per_hour", "login_failures", "delete_count",
+            "access_denied_count", "after_hours_login"
+        }
+        missing = required_columns - set(df.columns)
+        if missing:
+            raise ValueError(f"Missing prediction columns: {missing}")
         for _, row in anomalies.iterrows():
-            user_id = next((uid for uid in range(1, 7) if row[f"user_{uid}"] == 1), None)
-            if user_id is None:
-                skipped_count += 1
-                continue
+            user_id = int(row["user_id"])
             risk_level = classify_risk(row)
             description = (
-                f"ML detected suspicious activity. "
+                f"Anomaly detected using {row.get('detection_method', 'Isolation Forest')}. "
                 f"Anomaly score: {row['anomaly_score']:.4f}. "
                 f"Queries per hour: {row['queries_per_hour']}. "
                 f"Login failures: {row['login_failures']}. "
@@ -46,8 +51,7 @@ def store_anomaly_alerts(connection):
                 f"Access denied: {row['access_denied_count']}."
             )
             activity_type = "ML_DETECTED_ANOMALY"
-
-            cursor.execute(check_query, (int(user_id), activity_type, description))
+            cursor.execute(check_query, (user_id, activity_type, description))
             existing_alerts = cursor.fetchall()
 
             if existing_alerts:
@@ -56,10 +60,10 @@ def store_anomaly_alerts(connection):
                 updated_count += len(existing_alerts)
                 print(f"Existing alert updated: User {user_id}, Risk: {risk_level}")
             else:
-                cursor.execute(insert_query, (int(user_id), activity_type, description, risk_level))
+                cursor.execute(insert_query, (user_id, activity_type, description, risk_level))
                 inserted_count += 1
                 print(f"New alert inserted: User {user_id}, Risk: {risk_level}")
-
+                
         print("\n========== ALERT SUMMARY ==========")
         print("Anomalies detected:", len(anomalies))
         print("New alerts inserted:", inserted_count)
