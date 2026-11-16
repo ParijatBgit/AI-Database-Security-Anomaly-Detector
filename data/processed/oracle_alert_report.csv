@@ -1,0 +1,3 @@
+alert_id,user_id,username,activity_type,description,risk_level,detected_at,alert_status
+2,5,Admin,ML_DETECTED_ANOMALY,ML detected suspicious activity. Anomaly score: 0.0657. Queries per hour: 0. Login failures: 0. DELETE operations: 0. Access denied: 0.,MEDIUM,2026-11-16 10:43:26,OPEN
+1,3,Priya,ML_DETECTED_ANOMALY,ML detected suspicious activity. Anomaly score: 0.0696. Queries per hour: 0. Login failures: 0. DELETE operations: 0. Access denied: 0.,MEDIUM,2026-11-16 10:43:26,OPEN
