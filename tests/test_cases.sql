@@ -91,9 +91,27 @@ GROUP BY USER_ID, QUERY_TYPE, ACCESS_STATUS;
 
 
 -- TEST CASE 7: Verifying generated anomaly alerts
-SELECT A.ALERT_ID, U.USERNAME, A.ACTIVITY_TYPE, A.DESCRIPTION,
-       A.RISK_LEVEL, A.ALERT_STATUS
+SELECT
+    A.ALERT_ID, U.USERNAME, A.ACTIVITY_TYPE, A.DESCRIPTION, A.RISK_LEVEL, A.ALERT_STATUS
 FROM ANOMALY_ALERTS A
 JOIN DB_USERS U ON A.USER_ID = U.USER_ID
-WHERE U.USERNAME IN ('TestNormal01', 'TestFailed01', 'TestVolume01', 'TestDelete01')
-ORDER BY A.ALERT_ID DESC;
+WHERE U.USERNAME IN (
+    'TestNormal01',
+    'TestFailed01',
+    'TestVolume01',
+    'TestDelete01'
+)
+ORDER BY A.ALERT_ID;
+
+--user details check
+SELECT
+    USERNAME,
+    USER_ID
+FROM DB_USERS
+WHERE USERNAME IN (
+    'TestNormal01',
+    'TestFailed01',
+    'TestVolume01',
+    'TestDelete01'
+)
+ORDER BY USER_ID;
