@@ -3,3 +3,8 @@ failure_id,user_id,attempted_username,attempt_time,failure_reason
 10,2.0,Amit,2026-11-15 13:35:30,Incorrect Password
 11,,UnknownUser,2026-11-15 13:35:30,Invalid Username
 12,,UnknownUser,2026-11-15 13:35:30,Invalid Username
+41,1.0,Rahul,2026-11-16 12:17:55,TEST_REPEATED_FAILURE
+42,1.0,Rahul,2026-11-16 12:17:55,TEST_REPEATED_FAILURE
+43,1.0,Rahul,2026-11-16 12:17:55,TEST_REPEATED_FAILURE
+44,1.0,Rahul,2026-11-16 12:17:55,TEST_REPEATED_FAILURE
+45,1.0,Rahul,2026-11-16 12:17:55,TEST_REPEATED_FAILURE
